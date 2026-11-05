@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="{{.Locale}}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{{call .T "title"}}</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f5f4f0;color:#252d29;font:15px/1.6 system-ui,-apple-system,sans-serif}main{max-width:740px;margin:40px auto;padding:0 20px}nav{display:flex;justify-content:flex-end;gap:14px;font-size:12px}a{color:#34754b}h1{font-size:32px;letter-spacing:-1px;line-height:1.25;margin:24px 0 10px}p{color:#647068}.card{background:#fff;border:1px solid #e2e7df;border-radius:24px;padding:30px;box-shadow:0 12px 40px #23382a09}h2{font-size:17px;margin:0 0 14px}section+section{border-top:1px solid #e9ece6;margin-top:24px;padding-top:24px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.wide{grid-column:1/-1}label{font-size:13px;font-weight:600}input{display:block;width:100%;font:inherit;border:1px solid #dce3d9;border-radius:10px;background:#fafbf8;padding:11px;margin-top:6px}input:focus{outline:2px solid #4a8b5e;outline-offset:1px}.hint{font-size:12px;margin:9px 0 0}.error{border:1px solid #f0c4b8;color:#9b3421;background:#fff4ef;border-radius:12px;padding:14px;margin-bottom:20px}button{width:100%;background:#387b4e;color:#fff;font:600 15px system-ui;border:0;border-radius:12px;padding:15px;margin-top:25px;cursor:pointer}button:disabled{opacity:.65;cursor:wait}.success{color:#387b4e}footer{text-align:center;font-size:12px;color:#7a857e;padding:18px}@media(max-width:600px){main{margin:20px auto}.card{padding:22px}.grid{grid-template-columns:1fr}h1{font-size:27px}}
+</style></head><body><main>
+<nav><a href="?lang=zh-CN&amp;token={{.Token}}">简体中文</a><a href="?lang=zh-TW&amp;token={{.Token}}">繁體中文</a><a href="?lang=en-US&amp;token={{.Token}}">English</a></nav>
+<h1>{{call .T "title"}}</h1><p>{{call .T "intro"}}</p><div class="card">
+{{if .Done}}<h2 class="success">{{call .T "success"}}</h2><p id="status" role="status">{{call .T "starting"}}</p><a href="/admin/">{{call .T "enter"}}</a>
+<script nonce="{{.Nonce}}">
+let attempts=0;
+async function waitForStore(){
+  try{const response=await fetch('/health',{cache:'no-store',signal:AbortSignal.timeout(3000)});if(response.ok&&(await response.json()).status==='ok'){window.location.replace('/admin/');return;}}catch{}
+  if(++attempts<80){setTimeout(waitForStore,1500);}else{document.getElementById('status').textContent={{call .T "startup_wait"}};}
+}
+waitForStore();
+</script>
+{{else}}{{if .Error}}<div class="error" role="alert">{{.Error}}</div>{{end}}
+<form method="post" action="/install?lang={{.Locale}}">
+{{if .Token}}<input type="hidden" name="token" value="{{.Token}}">{{else}}<section><h2>{{call .T "authorization"}}</h2><label>{{call .T "token"}}<input name="token" required maxlength="64" autocomplete="off"></label><p class="hint">{{call .T "token_hint"}}</p></section>{{end}}
+<section><h2>{{call .T "redis"}}</h2><div class="grid"><label>{{call .T "host"}}<input name="redis_host" value="{{.RedisHost}}" required maxlength="255"></label><label>{{call .T "port"}}<input name="redis_port" type="number" value="{{.RedisPort}}" min="1" max="65535" required></label><label class="wide">{{call .T "redis_password"}}<input name="redis_password" type="password" autocomplete="new-password" maxlength="2048"></label></div><p class="hint">{{call .T "redis_hint"}}</p></section>
+<section><h2>{{call .T "admin"}}</h2><div class="grid"><label class="wide">{{call .T "username"}}<input name="admin_user" value="{{.AdminUser}}" required maxlength="128" autocomplete="username"></label><label>{{call .T "password"}}<input name="admin_password" type="password" minlength="8" maxlength="72" required autocomplete="new-password"></label><label>{{call .T "confirm"}}<input name="confirm_password" type="password" minlength="8" maxlength="72" required autocomplete="new-password"></label></div><p class="hint">{{call .T "password_hint"}}</p></section>
+<section><h2>{{call .T "site"}}</h2><label>{{call .T "site_url"}}<input name="site_url" type="url" value="{{.SiteURL}}" required maxlength="2048"></label><p class="hint">{{call .T "site_hint"}}</p></section>
+<button type="submit">{{call .T "submit"}}</button><p class="hint" id="status" role="status">{{call .T "database_hint"}}</p>
+</form>
+<script nonce="{{.Nonce}}">document.querySelector('form').addEventListener('submit',()=>{const button=document.querySelector('button[type=submit]');button.disabled=true;button.textContent={{call .T "working"}};document.getElementById('status').textContent={{call .T "working_hint"}};});</script>
+{{end}}</div><footer>Dujiao Next · V免签 Fox</footer></main></body></html>
