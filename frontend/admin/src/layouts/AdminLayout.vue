@@ -972,15 +972,13 @@ onBeforeUnmount(() => {
               </SelectContent>
             </Select>
             <Button
-              size="sm"
+              size="icon-sm"
               variant="outline"
-              class="gap-2"
               :title="t('admin.updateCheck.button')"
               :aria-label="t('admin.updateCheck.button')"
               @click="updateCheckOpen = true"
             >
               <RefreshCw class="h-4 w-4" />
-              <span class="hidden sm:inline">{{ t('admin.updateCheck.button') }}</span>
             </Button>
             <Button size="icon-sm" variant="outline" @click="toggleTheme">
               <Sun v-if="isDark" class="h-4 w-4" />
