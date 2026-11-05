@@ -514,6 +514,8 @@ const messages = {
         close: '关闭',
       },
       systemUpdate: {
+        sourceLabel: '更新来源：',
+        autoConfirmDescription: '将从 wstimin/faka 下载并校验新版本，替换程序后自动重启；确认运行目标版本后自动刷新网页。升级前请备份数据库和配置。',
         upgradeNow: '一键升级',
         upgrading: '升级中...',
         keepOpenHint: '升级过程中请勿关闭浏览器或重启服务器。',
@@ -549,7 +551,7 @@ const messages = {
         dockerHint: '在 docker-compose.yml 所在目录执行以下命令拉取新镜像并重建容器：',
         blocked: {
           container: '检测到当前运行在容器中，不支持一键升级 —— 容器内替换程序文件后，下次重建容器会回到镜像里的旧版本。',
-          source_build: '当前运行的是本地编译版本，不支持一键升级。请使用官方发布的二进制或镜像。',
+          source_build: '当前运行的是源码构建，不支持一键升级。请先安装 wstimin/faka Release 中的完整安装包。',
           dir_not_writable: '程序所在目录没有写入权限，无法替换文件。请检查目录权限或改用手动升级。',
           unsupported_os: '当前操作系统不支持一键升级，请手动下载对应平台的发行版替换。',
           exec_not_found: '无法定位当前程序文件路径，无法执行一键升级。',
@@ -5064,6 +5066,8 @@ const messages = {
         close: '關閉',
       },
       systemUpdate: {
+        sourceLabel: '更新來源：',
+        autoConfirmDescription: '將從 wstimin/faka 下載並驗證新版本，替換程式後自動重啟；確認執行目標版本後自動重新整理網頁。升級前請備份資料庫和設定。',
         upgradeNow: '一鍵升級',
         upgrading: '升級中...',
         keepOpenHint: '升級過程中請勿關閉瀏覽器或重啟伺服器。',
@@ -5099,7 +5103,7 @@ const messages = {
         dockerHint: '在 docker-compose.yml 所在目錄執行以下指令拉取新映像並重建容器：',
         blocked: {
           container: '偵測到當前運行在容器中，不支援一鍵升級 —— 容器內替換程式檔案後，下次重建容器會回到映像裡的舊版本。',
-          source_build: '當前運行的是本地編譯版本，不支援一鍵升級。請使用官方發布的二進位檔或映像。',
+          source_build: '目前執行的是原始碼構建，不支援一鍵升級。請先安裝 wstimin/faka Release 中的完整安裝包。',
           dir_not_writable: '程式所在目錄沒有寫入權限，無法替換檔案。請檢查目錄權限或改用手動升級。',
           unsupported_os: '當前作業系統不支援一鍵升級，請手動下載對應平台的發行版替換。',
           exec_not_found: '無法定位當前程式檔案路徑，無法執行一鍵升級。',
@@ -9614,6 +9618,8 @@ const messages = {
         close: 'Close',
       },
       systemUpdate: {
+        sourceLabel: 'Update source: ',
+        autoConfirmDescription: 'Download and verify the new version from wstimin/faka, replace the program, and restart automatically. The page reloads after the target version is running. Back up your database and configuration first.',
         upgradeNow: 'Upgrade now',
         upgrading: 'Upgrading...',
         keepOpenHint: 'Do not close the browser or restart the server while the upgrade is running.',
@@ -9649,7 +9655,7 @@ const messages = {
         dockerHint: 'Run the following in the directory containing docker-compose.yml to pull the new image and recreate the container:',
         blocked: {
           container: 'This instance runs inside a container, where one-click upgrade is not supported — replacing the binary in the container is undone the next time the container is recreated from its image.',
-          source_build: 'This is a locally built binary, which cannot self-update. Please use an official release binary or image.',
+          source_build: 'This is a source build and cannot self-update. First install a complete package from wstimin/faka Releases.',
           dir_not_writable: 'The directory containing the binary is not writable, so it cannot be replaced. Check the directory permissions or upgrade manually.',
           unsupported_os: 'One-click upgrade is not supported on this operating system. Please download and replace the release for your platform manually.',
           exec_not_found: 'Cannot resolve the path of the running binary, so one-click upgrade is unavailable.',

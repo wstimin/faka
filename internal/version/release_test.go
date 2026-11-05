@@ -1,6 +1,36 @@
 package version
 
-import "testing"
+import (
+	"context"
+	"io"
+	"net/http"
+	"strings"
+	"testing"
+)
+
+type releaseTransport func(*http.Request) (*http.Response, error)
+
+func (f releaseTransport) RoundTrip(r *http.Request) (*http.Response, error) { return f(r) }
+
+func TestModifiedBuildUsesFakaRepositoryForCheckAndDownload(t *testing.T) {
+	previousTransport, previousVersion := http.DefaultTransport, Version
+	t.Cleanup(func() { http.DefaultTransport = previousTransport; Version = previousVersion })
+	Version = "v1.5.2-vmq-web.9"
+	http.DefaultTransport = releaseTransport(func(r *http.Request) (*http.Response, error) {
+		if r.URL.String() != "https://api.github.com/repos/wstimin/faka/releases/latest" {
+			t.Fatalf("modified build must not query upstream or another repository: %s", r.URL)
+		}
+		return &http.Response{StatusCode: 200, Body: io.NopCloser(strings.NewReader(`{"tag_name":"v1.5.2-vmq-web.10","html_url":"https://github.com/wstimin/faka/releases/tag/v1.5.2-vmq-web.10","assets":[{"name":"dujiao-next_v1.5.2-vmq-web.10_Linux_x86_64.tar.gz","browser_download_url":"https://github.com/wstimin/faka/releases/download/v1.5.2-vmq-web.10/dujiao-next_v1.5.2-vmq-web.10_Linux_x86_64.tar.gz"}]}`)), Header: make(http.Header)}, nil
+	})
+	check, err := CheckLatestRelease(context.Background())
+	if err != nil || !check.HasUpdate || check.Source != "https://github.com/wstimin/faka/releases" {
+		t.Fatalf("wrong check result: %+v, %v", check, err)
+	}
+	release, err := FetchLatestRelease(context.Background())
+	if err != nil || len(release.Assets) != 1 || !strings.HasPrefix(release.Assets[0].DownloadURL, "https://github.com/wstimin/faka/releases/") {
+		t.Fatalf("wrong download release: %+v, %v", release, err)
+	}
+}
 
 func TestIsNewerVersion(t *testing.T) {
 	cases := []struct {

@@ -1,16 +1,27 @@
-name: goreleaser
+name: Build and publish installation packages
 
 on:
   push:
+    branches:
+      - main
     tags:
       - 'v*'
+  workflow_dispatch:
 
 permissions:
   contents: write
 
+concurrency:
+  group: faka-release
+  cancel-in-progress: false
+
+env:
+  RELEASE_BASE: v1.5.2-vmq-web
+
 jobs:
   goreleaser:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -34,6 +45,35 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
+
+      - name: Validate source and installer
+        run: |
+          set -euo pipefail
+          go vet ./...
+          go test ./...
+          bash -n start.sh
+          python3 scripts/tests/web-start_test.py
+
+      - name: Test frontends
+        run: |
+          set -euo pipefail
+          (cd frontend/admin && pnpm install --frozen-lockfile && pnpm test)
+          (cd frontend/user && pnpm install --frozen-lockfile && pnpm test)
+
+      - name: Create automatic version tag
+        if: github.ref_type != 'tag'
+        shell: bash
+        run: |
+          set -euo pipefail
+          release_tag="$RELEASE_BASE.$GITHUB_RUN_NUMBER"
+          # A rerun keeps its version and must still refer to this exact commit.
+          if git rev-parse "refs/tags/$release_tag" >/dev/null 2>&1; then
+            test "$(git rev-list -n 1 "$release_tag")" = "$GITHUB_SHA"
+          else
+            git tag "$release_tag" "$GITHUB_SHA"
+            git push origin "refs/tags/$release_tag"
+          fi
+          echo "Release version: $release_tag"
 
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v6

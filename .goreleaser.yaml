@@ -30,9 +30,9 @@ builds:
       - CGO_ENABLED=0
     main: ./cmd/server
     binary: dujiao-next
-    # 改造版保留 source，避免官方自更新覆盖 V免签驱动和网页安装向导。
+    # 正式包启用在线更新；程序的更新源固定为 wstimin/faka。
     ldflags:
-      - -s -w -X github.com/dujiao-next/internal/version.Version={{.Tag}} -X github.com/dujiao-next/internal/version.BuildType=source
+      - -s -w -X github.com/dujiao-next/internal/version.Version={{.Tag}} -X github.com/dujiao-next/internal/version.BuildType=release
     flags:
       - "-tags=release,fullstack"
     goos:
@@ -47,12 +47,13 @@ archives:
   - id: dujiao-next
     ids:
       - dujiao-next
-    formats: [tar.gz]
+    formats: [tar.gz, zip]
     files:
       - ./config.yml.example
       - ./README.md
       - ./scripts/dujiao-next-manager.sh
       - ./start.sh
+      - ./LICENSE
     name_template: >-
       {{ .ProjectName }}_
       {{- .Tag }}_
@@ -95,9 +96,11 @@ changelog:
       - 'Merge branch'
 
 release:
+  make_latest: true
+  prerelease: false
   footer: >-
     ---
 
-    ## 📚 Documentation（在线文档）
-    - [Installation Guide](https://dujiao-next.com/deploy/)
-    - [部署指南](https://dujiao-next.com/deploy/)
+    下载与服务器系统及 CPU 架构匹配的完整安装包，解压后执行 `bash start.sh`，打开输出的专属链接完成网页安装。
+    Linux x86_64 服务器请选择文件名包含 `Linux_x86_64` 的 ZIP 或 TAR.GZ；GitHub 自动生成的 Source code 是源码，不是服务器安装包。
+    改造版部署说明：[README](https://github.com/wstimin/faka#readme)。

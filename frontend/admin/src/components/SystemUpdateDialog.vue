@@ -112,7 +112,7 @@ const renderedReleaseNotes = computed(() => {
   return renderReleaseNotes(raw)
 })
 
-const isUpdating = computed(() => updateState.value?.status === 'running')
+const isUpdating = computed(() => updateState.value?.status === 'running' || restarting.value)
 
 // 二进制已替换但进程仍是旧版本 —— 无论本次会话内升级的还是上次遗留的，都需要重启
 const needsRestart = computed(() => updateState.value?.restart_required === true)
@@ -127,6 +127,7 @@ const blockedWithUpdate = computed(
 )
 
 const stageLabel = computed(() => {
+  if (restarting.value) return t('admin.systemUpdate.restarting')
   const stage = updateState.value?.stage
   if (!stage || stage === 'idle') return ''
   return t(`admin.systemUpdate.stage.${stage}`)
@@ -220,8 +221,12 @@ function startPolling() {
         stopPolling()
         if (state.status === 'succeeded') {
           notifySuccess(t('admin.systemUpdate.downloadSucceeded'))
-          // 升级完成后备份已生成，刷新能力探测以显示回滚入口
-          void loadCapability()
+          if (capability.value?.can_restart) {
+            // The user already approved the upgrade, including its managed restart.
+            await restartAndWait(state.target_version)
+          } else {
+            void loadCapability()
+          }
         } else if (state.status === 'failed') {
           notifyError(state.error || t('admin.systemUpdate.failed'))
         }
@@ -241,8 +246,8 @@ function stopPolling() {
 
 async function handleStartUpdate() {
   const ok = await confirmAction({
-    title: t('admin.systemUpdate.confirmTitle'),
-    description: t('admin.systemUpdate.confirmDescription', {
+    title: t('admin.systemUpdate.confirmTitle', { version: checkResult.value?.latest_version || '' }),
+    description: t(capability.value?.can_restart ? 'admin.systemUpdate.autoConfirmDescription' : 'admin.systemUpdate.confirmDescription', {
       version: checkResult.value?.latest_version || '',
     }),
     confirmText: t('admin.systemUpdate.upgradeNow'),
@@ -270,10 +275,15 @@ async function handleRestart() {
   })
   if (!ok) return
 
+  await restartAndWait()
+}
+
+async function restartAndWait(expectedVersion?: string) {
+  if (restarting.value) return
   restarting.value = true
   try {
     await adminAPI.restartSystemService()
-    waitForBackend()
+    waitForBackend(expectedVersion)
   } catch (err: any) {
     restarting.value = false
     notifyError(extractErrorMessage(err) || t('admin.systemUpdate.restartFailed'))
@@ -282,7 +292,7 @@ async function handleRestart() {
 
 // 重启期间后端会短暂不可达，轮询到恢复后刷新整页，
 // 确保内嵌的前端资源也换成新版本二进制里的那一份。
-function waitForBackend() {
+function waitForBackend(expectedVersion?: string) {
   const deadline = Date.now() + RESTART_TIMEOUT_MS
   stopPolling()
   pollTimer = setInterval(async () => {
@@ -293,7 +303,12 @@ function waitForBackend() {
       return
     }
     try {
-      await adminAPI.getUpdateStatus()
+      // The old process may still answer while requests finish; wait for the new version.
+      const res = await adminAPI.getPublicConfig()
+      const currentVersion = res.data?.data?.app_version
+      if (!currentVersion || (expectedVersion && currentVersion !== expectedVersion)) return
+      const status = await adminAPI.getUpdateStatus()
+      if (status.data?.data?.restart_required !== false) return
       stopPolling()
       window.location.reload()
     } catch {
@@ -369,7 +384,7 @@ onBeforeUnmount(stopPolling)
 </script>
 
 <template>
-  <Dialog :open="props.open" @update:open="emit('update:open', $event)">
+  <Dialog :open="props.open" @update:open="!isUpdating && emit('update:open', $event)">
     <DialogContent class="sm:max-w-lg">
       <DialogHeader>
         <DialogTitle>{{ t('admin.updateCheck.title') }}</DialogTitle>
@@ -411,6 +426,11 @@ onBeforeUnmount(stopPolling)
             </template>
           </dl>
 
+          <p v-if="checkResult.source" class="break-all text-xs text-muted-foreground">
+            {{ t('admin.systemUpdate.sourceLabel') }}
+            <a :href="checkResult.source" target="_blank" rel="noopener noreferrer" class="underline">{{ checkResult.source }}</a>
+          </p>
+
           <div
             v-if="checkResult.release_notes"
             class="release-notes max-h-40 overflow-y-auto rounded-md border bg-muted/40 px-3 py-2 text-xs text-muted-foreground"
@@ -426,7 +446,7 @@ onBeforeUnmount(stopPolling)
               </span>
               <span class="tabular-nums text-muted-foreground">{{ progressPercent }}%</span>
             </div>
-            <div class="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+            <div class="h-1.5 w-full overflow-hidden rounded-full bg-muted" role="progressbar" :aria-valuenow="progressPercent" aria-valuemin="0" aria-valuemax="100" :aria-label="stageLabel">
               <div
                 class="h-full rounded-full bg-primary transition-all duration-300"
                 :style="{ width: `${progressPercent}%` }"
@@ -501,7 +521,7 @@ onBeforeUnmount(stopPolling)
           variant="outline"
           size="sm"
           class="gap-1.5"
-          :disabled="rollingBack"
+          :disabled="rollingBack || restarting"
           @click="handleRollback"
         >
           <RotateCcw class="h-4 w-4" :class="rollingBack ? 'animate-spin' : ''" />
@@ -541,7 +561,7 @@ onBeforeUnmount(stopPolling)
           {{ isUpdating ? t('admin.systemUpdate.upgrading') : t('admin.systemUpdate.upgradeNow') }}
         </Button>
 
-        <Button variant="outline" size="sm" @click="emit('update:open', false)">
+        <Button variant="outline" size="sm" :disabled="isUpdating" @click="emit('update:open', false)">
           {{ t('admin.updateCheck.close') }}
         </Button>
       </DialogFooter>

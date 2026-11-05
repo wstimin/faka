@@ -5,6 +5,8 @@ application: the Go backend, the customer storefront, and the admin panel.
 
 ## 网页安装向导（V免签改造版）
 
+向 `main` 推送后，GitHub Actions 会先测试，再自动构建并发布完整安装包到 [Releases](https://github.com/wstimin/faka/releases/latest)，无需手动打标签。版本自动编号为 `v1.5.2-vmq-web.N`；也可在 Actions 手动运行发布工作流。Linux x86_64 服务器下载名称含 `Linux_x86_64` 的 ZIP 或 TAR.GZ；`Source code` 是源码，不含可执行程序。
+
 完整 Linux 安装包包含商城前台、管理后台、V免签 Fox 驱动和首次安装页面。服务器无需安装 Go、Node、PHP，也不需要手动创建 MariaDB 数据库。自动发货需要可连接的 Redis。
 
 1. 上传完整安装包并解压，在解压目录用 root 执行一次 `bash start.sh`。脚本安装到 `/opt/dujiao-next-vmq` 并配置开机启动；已有商城数据不会被覆盖。
@@ -14,11 +16,17 @@ application: the Go backend, the customer storefront, and the admin panel.
 
 网页安装的配置位于 `/opt/dujiao-next-vmq/db/config.yml`，数据库位于同目录 `dujiao.db`；管理员明文密码不写入配置。备份整个 `db/`（包含配置和密钥）及 `uploads/`。旧版根目录 `config.yml` 仍按原方式读取。已有配置或数据库会锁定安装，配置丢失时应恢复备份，不要删除数据库重新安装。
 
-安装向导支持简体中文、繁体中文和英文。启动脚本创建 `dujiao-next-vmq.service`，查看日志用 `journalctl -u dujiao-next-vmq -n 60 --no-pager`。正式收款前请为商城配置 HTTPS，并做一笔小额实付确认手机监控、回调和自动发货。改造版保持 `BuildType=source`，避免官方在线更新覆盖 V免签驱动；本次没有增加新的在线更新功能。
+安装向导支持简体中文、繁体中文和英文。启动脚本创建 `dujiao-next-vmq.service`，查看日志用 `journalctl -u dujiao-next-vmq -n 60 --no-pager`。正式收款前请为商城配置 HTTPS，并做一笔小额实付确认手机监控、回调和自动发货。
+
+## 网页版本更新
+
+GitHub Release 正式安装包已启用后台更新。登录后台后点击顶部「检测更新」，更新源固定为 `wstimin/faka`，面板会显示来源、当前版本和最新版本。点击「一键升级」并确认后，页面显示下载、SHA-256 校验、解压和替换进度；通过 `start.sh` 托管的服务会自动重启，确认目标版本启动后自动刷新网页。下载失败或校验失败不会继续替换。未由可重启服务托管的程序只下载替换，需要手动重启，页面会明确提示。
+
+更新只替换程序，保留 `db/`、配置、密钥、商品、卡密及上传文件，并保留上一版二进制备份。新版本启动可能进行数据库迁移，升级前请备份配置和数据库；已有回滚入口和 CLI 回滚保留原来的迁移风险校验，不自动强制回滚数据库。源码自行构建仍默认禁止在线更新；此前本地提供的 `BuildType=source` 安装包需先手工换成此仓库的 Release 包，之后才能使用网页升级。
 
 ## V免签 Fox 对接（本地改造版）
 
-此源码增加 `V免签 Fox` 支付驱动，适用于 Fox V3 的 HMAC-SHA256 接口，支持人民币支付宝和微信收款。请使用本改造源码编译的完整程序；直接运行官方在线安装脚本下载的程序不包含此驱动。自编译时保留 `BuildType=source`，防止后台升级用官方程序覆盖改造。
+此源码增加 `V免签 Fox` 支付驱动，适用于 Fox V3 的 HMAC-SHA256 接口，支持人民币支付宝和微信收款。请使用本仓库的完整安装包；直接运行官方在线安装脚本下载的程序不包含此驱动。本改造版检测更新和下载均使用 `wstimin/faka`，不会查询官方仓库。
 
 安装后在后台「支付渠道」新增渠道：
 
