@@ -200,10 +200,6 @@ async function request(method: string, path: string, bodyOrOptions?: any, option
       redirectToLogin()
       return Promise.reject(createNotifiedError(message))
     }
-    // 合规声明拦截：消息由路由守卫/页面 wrapper 处理，不展示通用 toast
-    if (message === 'compliance_required' || message === 'compliance_required_by_super_admin') {
-      return Promise.reject(createNotifiedError(message))
-    }
     notifyError(message)
     return Promise.reject(createNotifiedError(message))
   }

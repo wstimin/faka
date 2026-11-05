@@ -93,9 +93,8 @@ func registerAdminRoutes(
 
 	// 需要鉴权的接口
 	authorized := admin.Use(middleware.JWTAuthMiddleware(cfg.JWT.SecretKey, c.AdminStore), middleware.AdminRBACMiddleware(c.AuthzService))
-	// 支付/财务相关受保护子组：未确认合规声明时拦截
-	// 注：admin.Use(...) 已 mutate admin 自身，新 Group 继承 JWT + RBAC 中间件
-	paymentProtected := admin.Group("", middleware.PaymentComplianceRequired(c.ComplianceService))
+	// 支付/财务接口继续使用 JWT + RBAC，不再要求声明确认。
+	paymentProtected := authorized
 
 	// 合规声明
 	compliancetransport.RegisterAdminRoutes(authorized, compliancetransport.NewAdminHandler(c.ComplianceService))

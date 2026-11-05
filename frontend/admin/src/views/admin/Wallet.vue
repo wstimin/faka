@@ -8,7 +8,6 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
 import { notifyError, notifySuccess } from '@/utils/notify'
-import ComplianceGuardWrapper from '@/components/ComplianceGuardWrapper.vue'
 
 const { t } = useI18n()
 
@@ -78,7 +77,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <ComplianceGuardWrapper>
+  <div class="space-y-3">
   <div class="space-y-6">
     <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
       <div>
@@ -115,5 +114,5 @@ onMounted(() => {
       </div>
     </div>
   </div>
-  </ComplianceGuardWrapper>
+  </div>
 </template>

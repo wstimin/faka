@@ -425,10 +425,6 @@ onMounted(() => {
       {{ dashboardError }}
     </div>
 
-    <div class="min-w-0">
-      <DashboardAd slot-code="dashboard_top_banner" layout="banner" />
-    </div>
-
     <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4 [&>*]:min-w-0">
       <Card class="min-w-0">
         <CardHeader class="pb-2">

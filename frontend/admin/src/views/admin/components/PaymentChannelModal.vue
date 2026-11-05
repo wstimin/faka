@@ -29,6 +29,7 @@ const { t } = useI18n()
 
 const isEditing = computed(() => props.channelId !== null)
 const error = ref('')
+const saving = ref(false)
 const showAdvanced = ref(false)
 const applyingChannelData = ref(false)
 const configJsonPlaceholder = '{ "key": "value" }'
@@ -1119,6 +1120,7 @@ const handleWechatPublicKeyTest = async () => {
 }
 
 const handleSubmit = async () => {
+  if (saving.value) return
   error.value = ''
   let configJson: Record<string, unknown> = {}
   let explicitlyNullConfigKeys: string[] = []
@@ -1254,13 +1256,20 @@ const handleSubmit = async () => {
     sort_order: form.sort_order,
   }
 
-  if (isEditing.value && props.channelId) {
-    await adminAPI.updatePaymentChannel(props.channelId, payload)
-  } else {
-    await adminAPI.createPaymentChannel(payload)
+  saving.value = true
+  try {
+    if (isEditing.value && props.channelId) {
+      await adminAPI.updatePaymentChannel(props.channelId, payload)
+    } else {
+      await adminAPI.createPaymentChannel(payload)
+    }
+    emit('update:modelValue', false)
+    emit('success')
+  } catch (err) {
+    error.value = err instanceof Error ? err.message : t('admin.settings.saveFailed')
+  } finally {
+    saving.value = false
   }
-  emit('update:modelValue', false)
-  emit('success')
 }
 
 const closeModal = () => {
@@ -1955,13 +1964,13 @@ const closeModal = () => {
           </template>
         </div>
 
-        <div v-if="error" class="rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
+        <div v-if="error" role="alert" class="rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
           {{ error }}
         </div>
 
         <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
           <Button class="w-full sm:w-auto" type="button" variant="outline" @click="closeModal">{{ t('admin.common.cancel') }}</Button>
-          <Button class="w-full sm:w-auto" type="submit">{{ t('admin.common.save') }}</Button>
+          <Button class="w-full sm:w-auto" type="submit" :disabled="saving" :aria-busy="saving">{{ saving ? t('admin.settings.actions.saving') : t('admin.common.save') }}</Button>
         </div>
       </form>
     </DialogScrollContent>

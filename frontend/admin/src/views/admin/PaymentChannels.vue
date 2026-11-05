@@ -17,7 +17,6 @@ import { useListRefresh, type ListFetchOptions } from '@/composables/useListRefr
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { confirmAction } from '@/utils/confirm'
 import PaymentChannelModal from './components/PaymentChannelModal.vue'
-import ComplianceGuardWrapper from '@/components/ComplianceGuardWrapper.vue'
 import { notifyError, notifySuccess } from '@/utils/notify'
 
 const loading = ref(true)
@@ -281,7 +280,7 @@ watch(
 </script>
 
 <template>
-  <ComplianceGuardWrapper>
+  <div class="space-y-3">
   <div class="space-y-6">
     <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
       <h1 class="text-2xl font-semibold">{{ t('admin.paymentChannels.title') }}</h1>
@@ -452,5 +451,5 @@ watch(
       @success="handleModalSuccess"
     />
   </div>
-  </ComplianceGuardWrapper>
+  </div>
 </template>

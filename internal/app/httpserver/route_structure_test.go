@@ -134,7 +134,7 @@ func TestRouteDomainFilesPreserveTrustBoundaries(t *testing.T) {
 				`ordertransport.RegisterAdminRefundRoutes(authorized, adminOrderRefundHandler)`,
 				`fulfillmenttransport.RegisterAdminRoutes(authorized, adminFulfillmentHandler)`,
 				`authorized := admin.Use(middleware.JWTAuthMiddleware(`,
-				`paymentProtected := admin.Group("", middleware.PaymentComplianceRequired(`,
+				`paymentProtected := authorized`,
 				`compliancetransport.RegisterAdminRoutes(authorized,`,
 				`systemtransport.RegisterAdminRoutes(authorized,`,
 				`adproxytransport.RegisterAdminRoutes(authorized,`,
