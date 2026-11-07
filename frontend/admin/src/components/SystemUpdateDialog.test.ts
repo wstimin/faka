@@ -23,7 +23,7 @@ vi.mock('@/components/ui/button', async () => {
 
 const response = (data: unknown) => ({ data: { data } })
 const idle = { status: 'idle', stage: 'idle', percent: 0, restart_required: false }
-const running = { status: 'running', stage: 'downloading', percent: 37, target_version: 'v1.5.2-vmq-web.2', restart_required: false }
+const running = { status: 'running', stage: 'downloading', percent: 37, target_version: 'v1.5.3-faka.2', restart_required: false }
 const succeeded = { ...running, status: 'succeeded', stage: 'done', percent: 100, restart_required: true }
 async function flush() { for (let i = 0; i < 12; i++) await Promise.resolve(); await nextTick() }
 
@@ -38,12 +38,12 @@ describe('modified build update dialog', () => {
     Object.defineProperty(fakeWindow, 'location', { value: { reload } })
     vi.stubGlobal('window', fakeWindow)
     mocks.confirmAction.mockResolvedValue(true)
-    mocks.checkSystemUpdate.mockResolvedValue(response({ current_version: 'v1.5.2-vmq-web.1', latest_version: running.target_version, has_update: true, source: 'https://github.com/wstimin/faka/releases' }))
+    mocks.checkSystemUpdate.mockResolvedValue(response({ current_version: 'v1.5.3-faka.1', latest_version: running.target_version, has_update: true, source: 'https://github.com/wstimin/faka/releases' }))
     mocks.getUpdateCapability.mockResolvedValue(response({ capability: { can_update: true, can_restart: true, has_backup: false }, state: idle }))
     mocks.startSystemUpdate.mockResolvedValue(response(running))
     mocks.restartSystemService.mockResolvedValue(response({ restarting: true }))
     mocks.getUpdateStatus.mockResolvedValue(response(running))
-    mocks.getPublicConfig.mockResolvedValue(response({ app_version: 'v1.5.2-vmq-web.1' }))
+    mocks.getPublicConfig.mockResolvedValue(response({ app_version: 'v1.5.3-faka.1' }))
   })
   afterEach(() => { unmount?.(); container?.remove(); vi.unstubAllGlobals(); vi.useRealTimers() })
 

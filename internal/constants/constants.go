@@ -533,6 +533,7 @@ const (
 const (
 	StorefrontTemplateClassic = "classic"
 	StorefrontTemplateVault   = "vault"
+	StorefrontTemplateLiujin  = "liujin"
 	StorefrontTemplateDefault = StorefrontTemplateClassic
 )
 

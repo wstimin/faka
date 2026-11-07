@@ -33,13 +33,22 @@
       </div>
 
       <!-- 商品区 -->
-      <section>
-        <div v-if="loading" class="grid gap-4 grid-cols-[repeat(auto-fill,minmax(228px,1fr))]">
-          <div v-for="i in 9" :key="i" class="h-[280px] rounded-lg border bg-card"></div>
+      <section class="min-w-0">
+        <div v-if="loading" :class="isListMode ? 'space-y-2.5' : 'grid gap-4 grid-cols-[repeat(auto-fill,minmax(228px,1fr))]'">
+          <div v-for="i in 9" :key="i" class="rounded-lg border bg-card" :class="isListMode ? 'h-[76px]' : 'h-[280px]'"></div>
         </div>
 
         <template v-else-if="products.length">
-          <div class="grid gap-4 grid-cols-[repeat(auto-fill,minmax(228px,1fr))]">
+          <div v-if="isListMode" class="space-y-2.5">
+            <VaultProductListItem
+              v-for="(product, idx) in products"
+              :key="product.id"
+              :product="product"
+              :index="idx"
+              @quick-buy="openQuickBuy"
+            />
+          </div>
+          <div v-else class="grid gap-4 grid-cols-[repeat(auto-fill,minmax(228px,1fr))]">
             <VaultProductCard
               v-for="(product, idx) in products"
               :key="product.id"
@@ -55,7 +64,7 @@
               v-for="p in pageWindow"
               :key="p"
               class="grid h-[42px] min-w-[42px] place-items-center rounded-full border px-3 text-sm font-bold"
-              :class="p === currentPage ? 'border-primary bg-primary text-white' : 'border-border bg-card text-muted-foreground hover:border-primary hover:text-primary'"
+              :class="p === currentPage ? 'border-primary bg-primary text-primary-foreground' : 'border-border bg-card text-muted-foreground hover:border-primary hover:text-primary'"
               @click="changePage(p)"
             >{{ p }}</button>
             <button class="grid h-[42px] min-w-[42px] place-items-center rounded-full border bg-card px-3 font-bold text-muted-foreground hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:opacity-40" :disabled="currentPage >= totalPages" @click="changePage(currentPage + 1)"><ChevronRight class="h-[17px] w-[17px]" /></button>
@@ -88,14 +97,18 @@ import { Button } from '@/components/ui/button'
 import { useProductList } from '../../composables/useProductList'
 import { usePageSeo } from '../../composables/usePageSeo'
 import { useLocalized } from '../../composables/useProduct'
+import { useAppStore } from '../../stores/app'
 import type { PublicCategory } from '../../utils/category'
 import VaultProductCard from './components/VaultProductCard.vue'
+import VaultProductListItem from './components/VaultProductListItem.vue'
 import VaultCategorySidebar from './components/VaultCategorySidebar.vue'
 import ProductQuickBuy from '../../components/ProductQuickBuy.vue'
 
 const { t } = useI18n()
 const route = useRoute()
 const { getLocalizedText } = useLocalized()
+const appStore = useAppStore()
+const isListMode = computed(() => appStore.config?.template_mode === 'list')
 
 const quickBuyProduct = ref<any>(null)
 const quickBuyVisible = ref(false)

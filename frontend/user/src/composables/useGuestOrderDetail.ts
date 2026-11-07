@@ -6,6 +6,7 @@ import { debounceAsync } from '../utils/debounce'
 import { clearGuestOrderAuth, loadGuestOrderAuth, saveGuestOrderAuth } from '../utils/guestOrderAuth'
 import { resolveGuestOrderDetailViewState } from '../utils/guestOrderDetailState'
 import { useOrderDisplayHelpers } from './useOrderDisplayHelpers'
+import { toast } from './useToast'
 
 /**
  * 游客订单详情逻辑（classic + vault 共用）。
@@ -41,7 +42,9 @@ export function useGuestOrderDetail() {
       a.download = `fulfillment-${orderNo}.txt`
       a.click()
       URL.revokeObjectURL(url)
-    } catch {} finally {
+    } catch {
+      toast.error(t('orderDetail.fulfillmentDownloadFailed'))
+    } finally {
       fulfillmentDownloading.value = false
     }
   }
@@ -131,6 +134,7 @@ export function useGuestOrderDetail() {
     clearAuth,
     fulfillmentDownloading,
     handleDownloadFulfillment,
+    refreshOrder: loadOrder,
     ...helpers,
   }
 }

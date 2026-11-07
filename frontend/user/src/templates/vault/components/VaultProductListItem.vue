@@ -1,12 +1,12 @@
 <template>
   <RouterLink
     :to="`/products/${product.slug}`"
-    class="group flex items-center gap-3 rounded-lg border bg-card p-2.5 transition hover:border-hairline-strong hover:shadow-[var(--shadow-sm)] sm:gap-3.5 sm:p-3"
+    class="group grid grid-cols-[3.5rem_minmax(0,1fr)] items-center gap-3 rounded-lg border bg-card p-2.5 transition hover:border-hairline-strong hover:shadow-[var(--shadow-sm)] sm:flex sm:gap-3.5 sm:p-3"
     :class="{ 'opacity-[0.74]': soldOut }"
   >
     <!-- Thumbnail -->
     <span
-      class="relative grid h-14 w-14 flex-none place-items-center overflow-hidden rounded-[11px] sm:h-16 sm:w-16"
+      class="relative row-span-2 grid h-14 w-14 flex-none place-items-center overflow-hidden rounded-[11px] sm:h-16 sm:w-16"
       :class="coverClass"
     >
       <img v-if="coverImage" :src="coverImage" :alt="title" loading="lazy" class="absolute inset-0 h-full w-full object-cover" @error="imageErrored = true" />
@@ -42,7 +42,7 @@
     </div>
 
     <!-- Price + actions -->
-    <div class="flex flex-none items-center gap-2 sm:gap-3">
+    <div class="col-start-2 flex flex-none items-center justify-between gap-2 sm:gap-3">
       <div class="text-right">
         <template v-if="promo">
           <span class="block text-sm font-extrabold tabular-nums text-primary sm:text-base">{{ formatPrice(getPromotionPriceAmount(product), siteCurrency) }}</span>
@@ -53,7 +53,7 @@
       <button
         v-if="!soldOut"
         type="button"
-        class="grid h-9 w-9 flex-none place-items-center rounded-full bg-primary text-white transition hover:bg-primary/90"
+        class="grid h-9 w-9 flex-none place-items-center rounded-full bg-primary text-primary-foreground transition hover:bg-primary/90"
         :aria-label="t('products.quickBuyAria')"
         @click.prevent.stop="$emit('quickBuy', product)"
       >

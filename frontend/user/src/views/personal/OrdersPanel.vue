@@ -33,7 +33,7 @@
 
     <!-- 普通订单 Tab -->
     <template v-if="activeTab === 'product'">
-      <div class="grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <div v-if="!isLiujin" class="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <StatCard :label="t('orders.stats.totalMatched')" :value="orderPagination.total" :icon="ShoppingBag" tone="info" mono />
         <StatCard :label="t('orders.stats.currentPage')" :value="orders.length" :icon="Layers" tone="neutral" mono />
         <StatCard :label="t('orders.stats.pendingPayment')" :value="pendingPaymentCount" :icon="Clock" tone="warning" mono />
@@ -96,6 +96,7 @@
         action-to="/products"
       />
 
+      <LiujinOrderTable v-else-if="isLiujin" :orders="orders" />
       <div v-else class="space-y-4">
         <div
           v-for="order in orders"
@@ -241,7 +242,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, reactive, ref } from 'vue'
+import { computed, defineAsyncComponent, onMounted, onUnmounted, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { ShoppingBag, Layers, Clock, CheckCircle2, Wallet } from 'lucide-vue-next'
 import { userOrderAPI } from '../../api'
@@ -259,6 +260,10 @@ import PaginationNav from '../../components/PaginationNav.vue'
 import PanelHeading from '../../components/shared/PanelHeading.vue'
 import StatCard from '../../components/shared/StatCard.vue'
 
+import { getActiveTemplate } from '../../templates/registry'
+
+const LiujinOrderTable = defineAsyncComponent(() => import('../../templates/liujin/components/OrderTable.vue'))
+const isLiujin = computed(() => getActiveTemplate() === 'liujin')
 const { t } = useI18n()
 
 

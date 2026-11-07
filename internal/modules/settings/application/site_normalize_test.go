@@ -9,6 +9,34 @@ import (
 	"github.com/dujiao-next/internal/constants"
 )
 
+func TestSiteStorefrontTemplateRoundTrip(t *testing.T) {
+	for _, template := range []string{"classic", "vault", "liujin", "unknown"} {
+		t.Run(template, func(t *testing.T) {
+			svc := NewService(newMockSettingRepo())
+			result, err := svc.Update(constants.SettingKeySiteConfig, map[string]interface{}{
+				constants.SettingFieldStorefrontTemplate: template,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			want := template
+			if template == "unknown" {
+				want = constants.StorefrontTemplateDefault
+			}
+			if got := result[constants.SettingFieldStorefrontTemplate]; got != want {
+				t.Fatalf("template after save = %v, want %s", got, want)
+			}
+			stored, err := svc.GetByKey(constants.SettingKeySiteConfig)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if got := stored[constants.SettingFieldStorefrontTemplate]; got != want {
+				t.Fatalf("template after reload = %v, want %s", got, want)
+			}
+		})
+	}
+}
+
 func TestUpdateOrderSettingNormalized(t *testing.T) {
 	repo := newMockSettingRepo()
 	svc := NewService(repo)

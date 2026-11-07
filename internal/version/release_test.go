@@ -15,12 +15,12 @@ func (f releaseTransport) RoundTrip(r *http.Request) (*http.Response, error) { r
 func TestModifiedBuildUsesFakaRepositoryForCheckAndDownload(t *testing.T) {
 	previousTransport, previousVersion := http.DefaultTransport, Version
 	t.Cleanup(func() { http.DefaultTransport = previousTransport; Version = previousVersion })
-	Version = "v1.5.2-vmq-web.9"
+	Version = "v1.5.3-faka.9"
 	http.DefaultTransport = releaseTransport(func(r *http.Request) (*http.Response, error) {
 		if r.URL.String() != "https://api.github.com/repos/wstimin/faka/releases/latest" {
 			t.Fatalf("modified build must not query upstream or another repository: %s", r.URL)
 		}
-		return &http.Response{StatusCode: 200, Body: io.NopCloser(strings.NewReader(`{"tag_name":"v1.5.2-vmq-web.10","html_url":"https://github.com/wstimin/faka/releases/tag/v1.5.2-vmq-web.10","assets":[{"name":"dujiao-next_v1.5.2-vmq-web.10_Linux_x86_64.tar.gz","browser_download_url":"https://github.com/wstimin/faka/releases/download/v1.5.2-vmq-web.10/dujiao-next_v1.5.2-vmq-web.10_Linux_x86_64.tar.gz"}]}`)), Header: make(http.Header)}, nil
+		return &http.Response{StatusCode: 200, Body: io.NopCloser(strings.NewReader(`{"tag_name":"v1.5.3-faka.10","html_url":"https://github.com/wstimin/faka/releases/tag/v1.5.3-faka.10","assets":[{"name":"dujiao-next_v1.5.3-faka.10_Linux_x86_64.tar.gz","browser_download_url":"https://github.com/wstimin/faka/releases/download/v1.5.3-faka.10/dujiao-next_v1.5.3-faka.10_Linux_x86_64.tar.gz"}]}`)), Header: make(http.Header)}, nil
 	})
 	check, err := CheckLatestRelease(context.Background())
 	if err != nil || !check.HasUpdate || check.Source != "https://github.com/wstimin/faka/releases" {
@@ -40,6 +40,8 @@ func TestIsNewerVersion(t *testing.T) {
 		{"v1.0.1", "v1.0.0", true},
 		{"v1.1.0", "v1.0.9", true},
 		{"v2.0.0", "v1.99.99", true},
+		{"v1.5.3-faka.6", "v1.5.2-vmq-web.5", true},
+		{"v1.5.2-vmq-web.5", "v1.5.3-faka.6", false},
 		{"v1.0.0", "v1.0.0", false},
 		{"v1.0.0", "v1.0.1", false},
 		{"1.2.3", "v1.2.3", false},

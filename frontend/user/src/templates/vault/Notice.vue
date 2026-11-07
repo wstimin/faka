@@ -25,7 +25,7 @@
             :class="notice.thumbnail ? '' : 'bg-[color:var(--teal)]'"
           >
             <img v-if="notice.thumbnail" :src="getImageUrl(notice.thumbnail)" :alt="getLocalizedText(notice.title)" loading="lazy" class="absolute inset-0 h-full w-full object-cover" />
-            <Bell v-else class="h-6 w-6 text-white/90" />
+            <Bell v-else class="h-6 w-6 text-[color:var(--on-teal)]" />
           </div>
           <div class="min-w-0 flex-1">
             <div class="mb-1.5 flex items-center gap-2.5">

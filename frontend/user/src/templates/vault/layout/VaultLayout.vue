@@ -27,15 +27,15 @@
         </nav>
 
         <div class="ml-auto flex items-center gap-2">
-          <RouterLink class="grid h-10 w-10 flex-none place-items-center rounded-full bg-secondary text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary" to="/products" :aria-label="t('nav.products')"><Search class="h-[18px] w-[18px]" /></RouterLink>
-          <RouterLink v-if="!userAuthStore.isAuthenticated" class="grid h-10 w-10 flex-none place-items-center rounded-full bg-secondary text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary" to="/guest/orders" :aria-label="t('navbar.guestOrders')" :title="t('navbar.guestOrders')"><ClipboardList class="h-[18px] w-[18px]" /></RouterLink>
+          <RouterLink class="vault-nav-search grid h-10 w-10 flex-none place-items-center rounded-full bg-secondary text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary" to="/products" :aria-label="t('nav.products')"><Search class="h-[18px] w-[18px]" /></RouterLink>
+          <RouterLink v-if="!userAuthStore.isAuthenticated" class="flex h-10 flex-none items-center justify-center gap-2 rounded-full bg-secondary text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary" :class="showOrderLabel ? 'px-3' : 'w-10'" to="/guest/orders" :aria-label="t('navbar.guestOrders')" :title="t('navbar.guestOrders')"><ClipboardList class="h-[18px] w-[18px]" /><span v-if="showOrderLabel" class="hidden text-sm font-semibold sm:inline">{{ t('liujin.findPurchase') }}</span></RouterLink>
           <button class="grid h-10 w-10 flex-none place-items-center rounded-full bg-secondary text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary" type="button" :aria-label="t('resellerConsole.common.toggleTheme')" @click="toggleTheme">
             <Sun v-if="theme === 'dark'" class="h-[18px] w-[18px]" />
             <Moon v-else class="h-[18px] w-[18px]" />
           </button>
           <RouterLink class="relative grid h-10 w-10 flex-none place-items-center rounded-full bg-secondary text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary" to="/cart" :aria-label="t('navbar.cart')">
             <ShoppingCart class="h-[18px] w-[18px]" />
-            <span v-if="cartCount > 0" class="absolute -right-[3px] -top-[3px] grid h-[19px] min-w-[19px] place-items-center rounded-full bg-primary px-[5px] text-[11px] font-bold text-white">{{ cartCount }}</span>
+            <span v-if="cartCount > 0" class="absolute -right-[3px] -top-[3px] grid h-[19px] min-w-[19px] place-items-center rounded-full bg-primary px-[5px] text-[11px] font-bold text-primary-foreground">{{ cartCount }}</span>
           </RouterLink>
 
           <!-- 语言切换 -->
@@ -126,10 +126,6 @@
       <div class="mx-auto flex w-full max-w-[1180px] flex-wrap items-center justify-between gap-3.5 border-t px-6 pb-[30px] pt-[18px] text-[13.5px] text-muted-foreground">
         <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
           <span>© {{ year }} {{ brandName }}</span>
-          <a href="https://github.com/dujiao-next" target="_blank" rel="noopener noreferrer" aria-label="Dujiao-Next on GitHub" class="inline-flex items-center gap-1.5 hover:text-primary">
-            <Github class="h-[15px] w-[15px]" />
-            <span>Dujiao-Next</span>
-          </a>
         </div>
         <span>简体中文 · 繁體 · English</span>
       </div>
@@ -141,7 +137,7 @@
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import {
-  Search, Moon, Sun, ShoppingCart, Languages, Menu, X, User, Info, ClipboardList, LogOut, Github,
+  Search, Moon, Sun, ShoppingCart, Languages, Menu, X, User, Info, ClipboardList, LogOut,
   LayoutGrid, Send, MessageCircle, Mail, Headphones,
 } from 'lucide-vue-next'
 import { useAppStore } from '../../../stores/app'
@@ -164,6 +160,7 @@ import '@fontsource/nunito-sans/latin-700.css'
 import '../styles/vault.css'
 
 const { t } = useI18n()
+defineProps<{ showOrderLabel?: boolean }>()
 const appStore = useAppStore()
 const cartStore = useCartStore()
 const userAuthStore = useUserAuthStore()

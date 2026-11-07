@@ -20,7 +20,7 @@
           :variant="fulfillmentCopied ? 'default' : 'outline'"
           size="sm"
           class="rounded-full"
-          :class="fulfillmentCopied ? 'bg-[color:var(--teal-strong)] text-white hover:bg-[color:var(--teal-strong)]/90' : ''"
+          :class="fulfillmentCopied ? 'bg-[color:var(--teal-strong)] text-[color:var(--on-teal)] hover:bg-[color:var(--teal-strong)]/90' : ''"
           @click="handleCopyFulfillment(fulfillment)"
         >
           <component :is="fulfillmentCopied ? Check : Copy" /> {{ fulfillmentCopied ? t('orderDetail.fulfillmentCopied') : t('orderDetail.fulfillmentCopy') }}

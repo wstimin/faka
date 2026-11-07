@@ -87,6 +87,7 @@ body.vault-tokens {
   --ui-text-secondary: var(--ink-2);
   --ui-text-muted: var(--ink-3);
   --ui-text-on-accent: var(--on-red);
+  --ui-text-accent: var(--red);
   --ui-border: var(--border);
   --ui-border-strong: var(--border-strong);
   --ui-accent: var(--red);

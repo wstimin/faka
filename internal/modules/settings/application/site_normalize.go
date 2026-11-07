@@ -332,10 +332,11 @@ func normalizeSiteTemplateMode(raw interface{}) string {
 	return "card"
 }
 
-// normalizeStorefrontTemplate 归一化店面模板，允许 "classic" 或 "vault"，默认 "classic"。
+// normalizeStorefrontTemplate 归一化店面模板，未知模板回退 classic。
 func normalizeStorefrontTemplate(raw interface{}) string {
-	if normalizeSettingText(raw) == constants.StorefrontTemplateVault {
-		return constants.StorefrontTemplateVault
+	switch template := normalizeSettingText(raw); template {
+	case constants.StorefrontTemplateVault, constants.StorefrontTemplateLiujin:
+		return template
 	}
 	return constants.StorefrontTemplateDefault
 }

@@ -3,7 +3,7 @@ import { useUserAuthStore } from '../stores/userAuth'
 import { useAppStore } from '../stores/app'
 import { useTelegramMiniAppStore } from '../stores/telegramMiniApp'
 import { captureAffiliateFromRoute } from '../utils/affiliate'
-import { templateView } from '../templates/registry'
+import { getActiveTemplate, templateView } from '../templates/registry'
 import { GOOGLE_REDIRECT_FRONTEND_CALLBACK_PATH } from '../utils/googleRedirect'
 import { waitForListScrollSignal } from '../utils/listScrollSignal'
 
@@ -128,7 +128,7 @@ const router = createRouter({
             name: 'products',
             component: () => {
                 const appStore = useAppStore()
-                return appStore.config?.template_mode === 'list'
+                return getActiveTemplate() === 'classic' && appStore.config?.template_mode === 'list'
                     ? templateView('Home', homeViewLoader)()
                     : templateView('Products', productsViewLoader)()
             },
@@ -138,7 +138,7 @@ const router = createRouter({
             name: 'category-products',
             component: () => {
                 const appStore = useAppStore()
-                return appStore.config?.template_mode === 'list'
+                return getActiveTemplate() === 'classic' && appStore.config?.template_mode === 'list'
                     ? templateView('Home', homeViewLoader)()
                     : templateView('Products', productsViewLoader)()
             },

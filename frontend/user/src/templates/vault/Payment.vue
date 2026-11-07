@@ -9,6 +9,11 @@
     </div>
 
     <VaultCheckoutSteps current="payment" />
+    <div v-if="isLiujin && order && ['paid', 'fulfilling', 'partially_delivered', 'delivered', 'completed'].includes(order.status)" class="lj-state mb-5">
+      <h2>{{ t('order.status.paid') }}</h2>
+      <p class="lj-muted">{{ t('liujin.detailHint') }}</p>
+      <Button as-child class="mt-4"><RouterLink :to="{ name: isGuest ? 'guest-order-detail' : 'order-detail', params: { order_no: order.order_no } }">{{ t('liujin.yourContent') }}</RouterLink></Button>
+    </div>
 
     <!-- Loading -->
     <div v-if="loading" class="mb-[18px] rounded-xl border bg-card p-[22px]">
@@ -250,7 +255,9 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { getActiveTemplate } from '../registry'
 import { AlertCircle } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -260,11 +267,12 @@ import VaultCheckoutSteps from './components/VaultCheckoutSteps.vue'
 import { usePayment } from '../../composables/usePayment'
 
 const { t } = useI18n()
+const isLiujin = computed(() => getActiveTemplate() === 'liujin')
 
 const {
   loading, submitting, order, paymentResult, selectedChannelId, copied, walletAddressCopied,
   openedPayWindow, cachedPayment, guestAuth, guestAuthError, walletLoading, useBalance,
-  backLink, showGuestAuthForm, walletOnlyPayment, showBalanceOption, configReady, channels,
+  backLink, isGuest, showGuestAuthForm, walletOnlyPayment, showBalanceOption, configReady, channels,
   selectedChannel, selectedChannelName, cachedChannelName, resultChannelName, interactionLabel,
   paymentResultTitle, paymentGuideTitle, paymentGuideTip, showPayLink, showTelegramPayHint, payLinkOpenedTip,
   cryptoWalletAddress, cryptoPaymentDetails, hasCryptoPaymentDetails, qrUsingPayLinkFallback, showQRCode, qrImageUrl,

@@ -16,7 +16,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  RELEASE_BASE: v1.5.2-vmq-web
+  RELEASE_BASE: v1.5.3-faka
 
 jobs:
   goreleaser:

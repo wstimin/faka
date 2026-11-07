@@ -23,7 +23,7 @@
       <section class="grid gap-11 py-2.5 lg:grid-cols-2">
         <!-- 图区 -->
         <div>
-          <div class="relative grid h-[380px] place-items-center overflow-hidden rounded-xl" :class="images.length ? '' : 'bg-[linear-gradient(135deg,#7b74f2,var(--red))]'">
+          <div class="vault-product-cover relative grid h-[380px] place-items-center overflow-hidden rounded-xl" :class="images.length ? '' : 'bg-[linear-gradient(135deg,#7b74f2,var(--red))]'">
             <img v-if="currentImage" :src="currentImage" :alt="getLocalizedText(product.title)" class="absolute inset-0 h-full w-full object-cover" />
             <Package v-else class="h-[110px] w-[110px] text-white/95" />
           </div>

@@ -9,9 +9,9 @@
       <span
         class="grid h-6 w-6 place-items-center rounded-full border text-xs"
         :class="stateOf(s.key) === 'on'
-          ? 'border-primary bg-primary text-white'
+          ? 'border-primary bg-primary text-primary-foreground'
           : stateOf(s.key) === 'done'
-            ? 'border-[color:var(--teal-strong)] bg-[color:var(--teal-strong)] text-white'
+            ? 'border-[color:var(--teal-strong)] bg-[color:var(--teal-strong)] text-[color:var(--on-teal)]'
             : 'border-border bg-secondary text-muted-foreground'"
       >
         <Check v-if="stateOf(s.key) === 'done'" class="h-3.5 w-3.5" />

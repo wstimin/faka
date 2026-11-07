@@ -5,7 +5,7 @@ application: the Go backend, the customer storefront, and the admin panel.
 
 ## 网页安装向导（V免签改造版）
 
-向 `main` 推送后，GitHub Actions 会先测试，再自动构建并发布完整安装包到 [Releases](https://github.com/wstimin/faka/releases/latest)，无需手动打标签。版本自动编号为 `v1.5.2-vmq-web.N`；也可在 Actions 手动运行发布工作流。Linux x86_64 服务器下载名称含 `Linux_x86_64` 的 ZIP 或 TAR.GZ；`Source code` 是源码，不含可执行程序。
+向 `main` 推送后，GitHub Actions 会先测试，再自动构建并发布完整安装包到 [Releases](https://github.com/wstimin/faka/releases/latest)，无需手动打标签。版本自动编号为 `v1.5.3-faka.N`；也可在 Actions 手动运行发布工作流。Linux x86_64 服务器下载名称含 `Linux_x86_64` 的 ZIP 或 TAR.GZ；`Source code` 是源码，不含可执行程序。
 
 完整 Linux 安装包包含商城前台、管理后台、V免签 Fox 驱动和首次安装页面。服务器无需安装 Go、Node、PHP，也不需要手动创建 MariaDB 数据库。自动发货需要可连接的 Redis。
 
@@ -17,6 +17,10 @@ application: the Go backend, the customer storefront, and the admin panel.
 网页安装的配置位于 `/opt/dujiao-next-vmq/db/config.yml`，数据库位于同目录 `dujiao.db`；管理员明文密码不写入配置。备份整个 `db/`（包含配置和密钥）及 `uploads/`。旧版根目录 `config.yml` 仍按原方式读取。已有配置或数据库会锁定安装，配置丢失时应恢复备份，不要删除数据库重新安装。
 
 安装向导支持简体中文、繁体中文和英文。启动脚本创建 `dujiao-next-vmq.service`，查看日志用 `journalctl -u dujiao-next-vmq -n 60 --no-pager`。正式收款前请为商城配置 HTTPS，并做一笔小额实付确认手机监控、回调和自动发货。
+
+## 店面模板
+
+`v1.5.3-faka.6` 新增鎏金模板。后台「系统设置 → 模板配置」可选择经典、数字保险库或「鎏金模板」，保存后刷新前台生效。鎏金使用暖米白、复古金和深棕灰配色，复用现有购买流程；游客查询和会员订单采用紧凑表格，点击「查看卡密」在当前页面弹出原始发货内容，可复制或下载。超过接口预览上限的内容只允许下载完整版，避免复制不完整内容。首页、商品中心和分类页跟随后台切换卡片或列表布局。
 
 ## 网页版本更新
 

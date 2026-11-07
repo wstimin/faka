@@ -54,7 +54,7 @@
           <div class="flex flex-wrap items-center gap-3 pt-1.5">
             <button
               type="button"
-              class="inline-flex min-h-[40px] items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-bold text-[color:var(--ink)] transition hover:scale-[1.03]"
+              class="inline-flex min-h-[40px] items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-bold text-neutral-900 transition hover:scale-[1.03]"
               @click="goToHeroLink"
             >
               {{ heroPrimaryButtonText }}
@@ -68,9 +68,10 @@
             v-for="(_, idx) in banners"
             :key="`vault-banner-dot-${idx}`"
             type="button"
-            class="h-2 rounded-full transition-all"
+            class="vault-banner-dot h-2 rounded-full transition-all"
             :class="idx === currentBannerIndex ? 'w-6 bg-white' : 'w-2 bg-white/45 hover:bg-white/70'"
             :aria-label="t('common.switchBanner', { n: idx + 1 })"
+            :aria-current="idx === currentBannerIndex ? 'true' : undefined"
             @click="selectHeroBanner(idx)"
           ></button>
         </div>

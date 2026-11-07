@@ -59,7 +59,7 @@
                   v-for="p in listPageWindow"
                   :key="p"
                   class="grid h-[42px] min-w-[42px] place-items-center rounded-full border px-3 text-sm font-bold"
-                  :class="p === listCurrentPage ? 'border-primary bg-primary text-white' : 'border-border bg-card text-muted-foreground hover:border-primary hover:text-primary'"
+                  :class="p === listCurrentPage ? 'border-primary bg-primary text-primary-foreground' : 'border-border bg-card text-muted-foreground hover:border-primary hover:text-primary'"
                   @click="listChangePage(p)"
                 >{{ p }}</button>
                 <button class="grid h-[42px] min-w-[42px] place-items-center rounded-full border bg-card px-3 font-bold text-muted-foreground hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:opacity-40" :disabled="listCurrentPage >= listTotalPages" @click="listChangePage(listCurrentPage + 1)"><ChevronRight class="h-[17px] w-[17px]" /></button>
@@ -89,7 +89,7 @@
           <RouterLink
             v-for="(cat, idx) in topCategories"
             :key="cat.id"
-            class="relative flex min-h-[116px] flex-col justify-between gap-2.5 overflow-hidden rounded-lg p-[18px] transition hover:-translate-y-[3px] hover:shadow-[var(--shadow)]"
+            class="vault-category-tile relative flex min-h-[116px] flex-col justify-between gap-2.5 overflow-hidden rounded-lg p-[18px] transition hover:-translate-y-[3px] hover:shadow-[var(--shadow)]"
             :class="catColor(idx)"
             :to="`/categories/${cat.slug}`"
           >

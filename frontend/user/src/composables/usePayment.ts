@@ -1358,6 +1358,7 @@ export function usePayment() {
     useBalance,
     // routing / flags
     backLink,
+    isGuest,
     showGuestAuthForm,
     walletOnlyPayment,
     showBalanceOption,

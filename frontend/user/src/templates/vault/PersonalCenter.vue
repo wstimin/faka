@@ -149,6 +149,7 @@
               <div v-for="idx in 3" :key="idx" class="h-16 rounded-md bg-secondary"></div>
             </div>
             <div v-else-if="userProfileStore.recentOrders.length === 0" class="rounded-md border border-dashed p-[18px] text-[13px] text-muted-foreground">{{ t('personalCenter.overview.emptyOrders') }}</div>
+            <LiujinOrderTable v-else-if="isLiujin" :orders="userProfileStore.recentOrders.map(order => ({ ...order, status: order.status || '' }))" />
             <div v-else class="grid gap-2.5">
               <div v-for="order in userProfileStore.recentOrders" :key="order.order_no" class="flex flex-wrap items-center justify-between gap-3.5 rounded-lg border p-4 transition hover:-translate-y-0.5 hover:border-hairline-strong hover:shadow-[var(--shadow)]">
                 <div>
@@ -188,7 +189,9 @@
 </template>
 
 <script setup lang="ts">
+import { computed, defineAsyncComponent } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { getActiveTemplate } from '../registry'
 import { Crown, ShoppingBag, ShieldCheck, Percent } from 'lucide-vue-next'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -202,6 +205,8 @@ import AffiliatePanel from '../../views/personal/AffiliatePanel.vue'
 import ApiPanel from '../../views/personal/ApiPanel.vue'
 import { usePersonalCenter, type PersonalSection } from '../../composables/usePersonalCenter'
 
+const LiujinOrderTable = defineAsyncComponent(() => import('../liujin/components/OrderTable.vue'))
+const isLiujin = computed(() => getActiveTemplate() === 'liujin')
 const { t } = useI18n()
 
 const props = withDefaults(defineProps<{ section?: PersonalSection }>(), {

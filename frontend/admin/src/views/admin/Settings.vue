@@ -220,7 +220,7 @@ const form = reactive({
   },
   scripts: [] as SiteScriptItem[],
   footer_links: [] as FooterLinkItem[],
-  storefront_template: 'classic' as 'classic' | 'vault',
+  storefront_template: 'classic' as 'classic' | 'vault' | 'liujin',
   template_mode: 'card' as 'card' | 'list',
 })
 
@@ -459,7 +459,7 @@ const fetchSettings = async () => {
       form.template_mode = rawTemplateMode === 'list' ? 'list' : 'card'
 
       const rawStorefrontTemplate = String(data.storefront_template || 'classic').trim()
-      form.storefront_template = rawStorefrontTemplate === 'vault' ? 'vault' : 'classic'
+      form.storefront_template = rawStorefrontTemplate === 'liujin' ? 'liujin' : rawStorefrontTemplate === 'vault' ? 'vault' : 'classic'
     }
 
     if (orderRes.data && orderRes.data.data) {
@@ -1150,7 +1150,7 @@ onMounted(() => {
           </div>
         </div>
         <div class="px-6 py-6">
-          <RadioGroup v-model="form.storefront_template" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <RadioGroup v-model="form.storefront_template" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <!-- Classic -->
             <Label
               class="relative flex cursor-pointer flex-col items-center gap-3 rounded-xl border-2 p-6 transition-all"
@@ -1200,6 +1200,16 @@ onMounted(() => {
                   <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                 </svg>
               </div>
+            </Label>
+            <Label class="relative flex cursor-pointer flex-col items-center gap-3 rounded-xl border-2 p-6 transition-colors"
+              :class="form.storefront_template === 'liujin' ? 'border-primary bg-primary/5 ring-1 ring-primary/20' : 'border-border hover:border-muted-foreground/30'">
+              <RadioGroupItem value="liujin" class="sr-only" />
+              <div aria-hidden="true" class="w-full max-w-40 overflow-hidden rounded-lg border border-[#ddd5c5] bg-[#f7f5f2] p-3">
+                <div class="mb-2 h-2 w-12 rounded bg-[#2c2a26]"></div>
+                <div class="grid grid-cols-3 gap-1.5"><div v-for="n in 3" :key="n" class="h-8 rounded bg-[#e8e1d5]"></div></div>
+                <div class="mt-2 ml-auto h-2 w-8 rounded bg-[#c9a227]"></div>
+              </div>
+              <div class="text-center"><div class="font-semibold">{{ t('admin.settings.template.liujinMode') }}</div><div class="mt-1 text-xs text-muted-foreground">{{ t('admin.settings.template.liujinModeDesc') }}</div></div>
             </Label>
           </RadioGroup>
         </div>

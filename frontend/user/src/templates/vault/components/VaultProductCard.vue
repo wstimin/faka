@@ -2,7 +2,7 @@
   <RouterLink :to="`/products/${product.slug}`" class="flex h-full flex-col gap-2.5 rounded-lg border bg-card p-3 text-left transition hover:-translate-y-[3px] hover:border-hairline-strong hover:shadow-[var(--shadow)]" :class="{ 'opacity-[0.74]': soldOut }">
     <div class="flex flex-col items-stretch gap-[11px]">
       <span
-        class="relative grid h-[152px] w-full flex-none place-items-center overflow-hidden rounded-[13px] will-change-transform after:absolute after:inset-0 after:bg-[radial-gradient(130%_80%_at_78%_14%,rgba(255,255,255,0.26),transparent_56%)]"
+        class="vault-product-cover relative grid h-[152px] w-full flex-none place-items-center overflow-hidden rounded-[13px] will-change-transform after:absolute after:inset-0 after:bg-[radial-gradient(130%_80%_at_78%_14%,rgba(255,255,255,0.26),transparent_56%)]"
         :class="coverClass"
       >
         <img v-if="coverImage" :src="coverImage" :alt="title" loading="lazy" class="absolute inset-0 h-full w-full object-cover" @error="imageErrored = true" />
@@ -49,7 +49,7 @@
       <button
         v-else
         type="button"
-        class="inline-flex flex-none items-center gap-1.5 rounded-full bg-primary px-3.5 py-1.5 text-[13px] font-bold text-white transition hover:bg-primary/90"
+        class="inline-flex flex-none items-center gap-1.5 rounded-full bg-primary px-3.5 py-1.5 text-[13px] font-bold text-primary-foreground transition hover:bg-primary/90"
         :aria-label="t('products.quickBuyAria')"
         @click.prevent.stop="$emit('quickBuy', product)"
       >
