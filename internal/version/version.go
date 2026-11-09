@@ -2,7 +2,7 @@ package version
 
 // Version is the application version, injected at build time via ldflags.
 // Example: go build -ldflags "-X github.com/dujiao-next/internal/version.Version=v1.2.3"
-var Version = "v1.5.3-faka.6"
+var Version = "v1.5.3-faka.8"
 
 // BuildType 标识二进制来源。CI 正式发布（goreleaser / Dockerfile）注入 "release"，
 // 本地 go build / go run 保持默认 "source"。

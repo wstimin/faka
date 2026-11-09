@@ -2,6 +2,11 @@ package systemhttp
 
 import (
 	"errors"
+	"os"
+	"strings"
+
+	"github.com/dujiao-next/internal/config"
+	"github.com/dujiao-next/internal/web"
 
 	ginutil "github.com/dujiao-next/internal/platform/http/ginutil"
 	"github.com/dujiao-next/internal/platform/http/response"
@@ -9,6 +14,61 @@ import (
 
 	"github.com/gin-gonic/gin"
 )
+
+// GetAdminPath is authenticated; never publish the private entry in public config.
+func (h *AdminHandler) GetAdminPath(c *gin.Context) {
+	current := h.config.Web.AdminPath
+	saved, err := config.ReadAdminPath(h.config.FilePath)
+	reason := ""
+	if err != nil {
+		reason = "config_unavailable"
+	} else if os.Getenv("WEB_ADMIN_PATH") != "" {
+		reason = "environment_override"
+	}
+	response.Success(c, gin.H{
+		"current_path": current, "saved_path": saved,
+		"can_change": reason == "", "block_reason": reason,
+		"can_restart":      selfupdate.Detect().CanRestart,
+		"restart_required": err == nil && reason == "" && saved != current,
+	})
+}
+
+func (h *AdminHandler) UpdateAdminPath(c *gin.Context) {
+	var req struct {
+		Path string `json:"path" binding:"required,max=200"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		ginutil.RespondBindError(c, err)
+		return
+	}
+	if err := web.ValidateAdminPath(req.Path); err != nil || storefrontPathConflict(req.Path) {
+		ginutil.RespondError(c, response.CodeBadRequest, "error.admin_path_invalid", nil)
+		return
+	}
+	if os.Getenv("WEB_ADMIN_PATH") != "" {
+		ginutil.RespondError(c, response.CodeBadRequest, "error.admin_path_environment", nil)
+		return
+	}
+	if h.updates.Running() {
+		ginutil.RespondError(c, response.CodeBadRequest, "error.update_in_progress", nil)
+		return
+	}
+	if err := config.WriteAdminPath(h.config.FilePath, req.Path); err != nil {
+		ginutil.RespondError(c, response.CodeInternal, "error.admin_path_save_failed", err)
+		return
+	}
+	logOperation(c, "admin_entry_path_changed")
+	response.Success(c, gin.H{"saved_path": req.Path, "restart_required": req.Path != h.config.Web.AdminPath})
+}
+
+func storefrontPathConflict(entry string) bool {
+	for _, prefix := range []string{"/assets", "/auth", "/products", "/categories", "/cart", "/checkout", "/pay", "/blog", "/notice", "/about", "/terms", "/privacy", "/guest", "/me", "/reseller", "/orders", "/recharge-orders", "/.well-known", "/favicon.ico", "/robots.txt", "/sitemap.xml"} {
+		if entry == prefix || strings.HasPrefix(entry, prefix+"/") {
+			return true
+		}
+	}
+	return false
+}
 
 // GetUpdateCapability 返回当前部署环境是否支持一键升级。
 // 前端据此决定展示升级按钮还是手动升级指引（容器部署走 compose 命令）。

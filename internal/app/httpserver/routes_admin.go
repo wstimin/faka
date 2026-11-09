@@ -123,7 +123,7 @@ func registerAdminRoutes(
 	adminauthtransport.RegisterAdminPasswordRoutes(authorized, adminLoginHandler)
 
 	// 系统信息与版本检测
-	systemtransport.RegisterAdminRoutes(authorized, systemtransport.NewAdminHandler(nil))
+	systemtransport.RegisterAdminRoutes(authorized, systemtransport.NewAdminHandler(nil, cfg))
 
 	adminauthtransport.RegisterAdmin2FARoutes(authorized, admin2FAHandler)
 

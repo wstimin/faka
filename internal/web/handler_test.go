@@ -90,6 +90,28 @@ func newAdminFS(indexHTML string) fstest.MapFS {
 	}
 }
 
+func TestChangedAdminEntryDoesNotExposeOldEntry(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	router := gin.New()
+	if err := RegisterAdmin(router, "/private-console", newAdminFS(`<base href="__DJ_ADMIN_BASE__/"><title>private admin</title>`)); err != nil {
+		t.Fatal(err)
+	}
+	if err := RegisterUser(router, fstest.MapFS{"index.html": &fstest.MapFile{Data: []byte("storefront")}}); err != nil {
+		t.Fatal(err)
+	}
+	for _, entry := range []string{"/private-console/login", "/admin/", "/admin/login"} {
+		response := httptest.NewRecorder()
+		router.ServeHTTP(response, httptest.NewRequest(http.MethodGet, entry, nil))
+		isAdmin := strings.Contains(response.Body.String(), "private admin")
+		if isAdmin != (entry == "/private-console/login") {
+			t.Fatalf("wrong admin entry response for %s", entry)
+		}
+		if response.Header().Get("Location") != "" {
+			t.Fatal("old entry must not reveal or redirect to the new one")
+		}
+	}
+}
+
 func TestRegisterAdmin_PlaceholderReplacement(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	r := gin.New()

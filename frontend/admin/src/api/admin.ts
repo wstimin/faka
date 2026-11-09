@@ -402,6 +402,8 @@ export const adminAPI = {
   checkSystemUpdate: (params?: { owner?: string; repo?: string }) =>
     api.get('/admin/system/version/check', { params }),
   getUpdateCapability: () => api.get('/admin/system/update/capability'),
+  getAdminPath: () => api.get('/admin/system/admin-path'),
+  updateAdminPath: (data: { path: string }) => api.put('/admin/system/admin-path', data),
   getUpdateStatus: () => api.get('/admin/system/update/status'),
   startSystemUpdate: () => api.post('/admin/system/update/start'),
   // force：迁移已开始或元数据不可信时，确认风险后强制回滚

@@ -17,6 +17,7 @@ import { adminAPI } from '@/api/admin'
 import { renderReleaseNotes } from '@/utils/releaseNotes'
 import { confirmAction } from '@/utils/confirm'
 import { notifyError, notifySuccess } from '@/utils/notify'
+import { useServiceRestart } from '@/composables/useServiceRestart'
 
 const props = defineProps<{ open: boolean }>()
 const emit = defineEmits<{ 'update:open': [value: boolean] }>()
@@ -94,15 +95,24 @@ const checkError = ref('')
 const capability = ref<UpdateCapability | null>(null)
 const updateState = ref<UpdateState | null>(null)
 const starting = ref(false)
-const restarting = ref(false)
+let restartVersion: string | undefined
+const { restarting, restart: restartService } = useServiceRestart(
+  async () => {
+    const res = await adminAPI.getPublicConfig()
+    const version = res.data?.data?.app_version
+    if (!version || (restartVersion && version !== restartVersion)) return false
+    const status = await adminAPI.getUpdateStatus()
+    return status.data?.data?.restart_required === false
+  },
+  () => window.location.reload(),
+  (reason, error) => notifyError(extractErrorMessage(error) || t(`admin.systemUpdate.${reason}`)),
+)
 const rollingBack = ref(false)
 const copied = ref(false)
 
-// 升级任务在后端异步执行，前端靠轮询拿进度；重启期间同一个定时器用来探活。
+// 升级任务在后端异步执行，前端靠轮询拿进度。
 let pollTimer: ReturnType<typeof setInterval> | null = null
 const POLL_INTERVAL = 1500
-// 重启探活上限：systemd 拉起 + 数据库迁移在慢机器上可能要几十秒
-const RESTART_TIMEOUT_MS = 120_000
 
 const dockerUpgradeCommand = 'docker compose pull && docker compose up -d'
 
@@ -280,41 +290,9 @@ async function handleRestart() {
 
 async function restartAndWait(expectedVersion?: string) {
   if (restarting.value) return
-  restarting.value = true
-  try {
-    await adminAPI.restartSystemService()
-    waitForBackend(expectedVersion)
-  } catch (err: any) {
-    restarting.value = false
-    notifyError(extractErrorMessage(err) || t('admin.systemUpdate.restartFailed'))
-  }
-}
-
-// 重启期间后端会短暂不可达，轮询到恢复后刷新整页，
-// 确保内嵌的前端资源也换成新版本二进制里的那一份。
-function waitForBackend(expectedVersion?: string) {
-  const deadline = Date.now() + RESTART_TIMEOUT_MS
   stopPolling()
-  pollTimer = setInterval(async () => {
-    if (Date.now() > deadline) {
-      stopPolling()
-      restarting.value = false
-      notifyError(t('admin.systemUpdate.restartTimeout'))
-      return
-    }
-    try {
-      // The old process may still answer while requests finish; wait for the new version.
-      const res = await adminAPI.getPublicConfig()
-      const currentVersion = res.data?.data?.app_version
-      if (!currentVersion || (expectedVersion && currentVersion !== expectedVersion)) return
-      const status = await adminAPI.getUpdateStatus()
-      if (status.data?.data?.restart_required !== false) return
-      stopPolling()
-      window.location.reload()
-    } catch {
-      // 后端还没起来，继续等
-    }
-  }, 2000)
+  restartVersion = expectedVersion
+  await restartService()
 }
 
 // 迁移已经开始（即使服务后来没启动成功），或者元数据不可信、压根判断不了 ——

@@ -16,6 +16,9 @@ const (
 
 var messages = map[string]map[string]string{
 	LocaleZH: {
+		"error.admin_path_invalid":                       "后台路径格式无效或与网站现有页面冲突，请使用新的独立路径",
+		"error.admin_path_environment":                   "后台路径由 WEB_ADMIN_PATH 环境变量固定，请先修改部署配置",
+		"error.admin_path_save_failed":                   "后台路径保存失败，原配置保留；请检查配置文件及所在目录的写入权限",
 		"error.jwt_secret_missing":                       "JWT secret 未配置",
 		"error.auth_header_missing":                      "缺少 Authorization header",
 		"error.auth_header_invalid":                      "Authorization header 格式错误",
@@ -393,6 +396,9 @@ var messages = map[string]map[string]string{
 		"error.invalid_product_status":              "无效的商品状态参数",
 	},
 	LocaleTW: {
+		"error.admin_path_invalid":                       "後台路徑格式無效或與網站現有頁面衝突，請使用新的獨立路徑",
+		"error.admin_path_environment":                   "後台路徑由 WEB_ADMIN_PATH 環境變數固定，請先修改部署設定",
+		"error.admin_path_save_failed":                   "後台路徑儲存失敗，原設定保留；請檢查設定檔及所在目錄的寫入權限",
 		"error.jwt_secret_missing":                       "JWT secret 未配置",
 		"error.auth_header_missing":                      "缺少 Authorization header",
 		"error.auth_header_invalid":                      "Authorization header 格式錯誤",
@@ -770,6 +776,9 @@ var messages = map[string]map[string]string{
 		"error.invalid_product_status":              "無效的商品狀態參數",
 	},
 	LocaleEN: {
+		"error.admin_path_invalid":                       "Invalid admin path or conflict with a storefront route. Choose a separate path.",
+		"error.admin_path_environment":                   "WEB_ADMIN_PATH overrides the admin path. Change your deployment configuration first.",
+		"error.admin_path_save_failed":                   "Unable to save the admin path; the previous config is unchanged. Check write permissions for the config file and its directory.",
 		"error.jwt_secret_missing":                       "JWT secret is not configured",
 		"error.auth_header_missing":                      "Missing Authorization header",
 		"error.auth_header_invalid":                      "Invalid Authorization header format",

@@ -14,6 +14,7 @@ import (
 
 // Config 应用配置结构
 type Config struct {
+	FilePath     string             `mapstructure:"-" json:"-"`
 	App          AppConfig          `mapstructure:"app"`
 	Server       ServerConfig       `mapstructure:"server"`
 	Log          LogConfig          `mapstructure:"log"`
@@ -449,6 +450,7 @@ func Load() *Config {
 		logger.Errorw("config_unmarshal_failed", "error", err)
 		panic(fmt.Errorf("配置解析失败: %w", err))
 	}
+	cfg.FilePath = viper.ConfigFileUsed()
 
 	return &cfg
 }

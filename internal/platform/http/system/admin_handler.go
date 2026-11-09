@@ -5,6 +5,7 @@ import (
 	"errors"
 	"time"
 
+	"github.com/dujiao-next/internal/config"
 	ginutil "github.com/dujiao-next/internal/platform/http/ginutil"
 
 	"github.com/dujiao-next/internal/platform/http/response"
@@ -27,16 +28,18 @@ func (defaultReleaseChecker) CheckLatestRelease(ctx context.Context) (*version.C
 
 // AdminHandler 处理后台系统信息请求。
 type AdminHandler struct {
+	config   *config.Config
 	releases ReleaseChecker
 	// updates 一键升级任务管理器。进程内单例，串行化升级任务并保存可轮询的进度。
 	updates *selfupdate.Manager
 }
 
-func NewAdminHandler(releases ReleaseChecker) *AdminHandler {
+func NewAdminHandler(releases ReleaseChecker, cfg *config.Config) *AdminHandler {
 	if releases == nil {
 		releases = defaultReleaseChecker{}
 	}
 	return &AdminHandler{
+		config:   cfg,
 		releases: releases,
 		updates:  selfupdate.NewManager(),
 	}

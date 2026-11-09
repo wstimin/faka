@@ -266,6 +266,8 @@ func BuiltinRoleSeeds() []RoleSeed {
 				{Object: "/admin/system/update/start", Action: "POST"},
 				{Object: "/admin/system/update/rollback", Action: "POST"},
 				{Object: "/admin/system/restart", Action: "POST"},
+				{Object: "/admin/system/admin-path", Action: "GET"},
+				{Object: "/admin/system/admin-path", Action: "PUT"},
 				// 渠道客户端管理
 				{Object: "/admin/channel-clients", Action: "*"},
 				{Object: "/admin/channel-clients/:id", Action: "*"},

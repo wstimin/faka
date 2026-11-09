@@ -5,7 +5,7 @@ application: the Go backend, the customer storefront, and the admin panel.
 
 ## 网页安装向导（V免签改造版）
 
-向 `main` 推送后，GitHub Actions 会先测试，再自动构建并发布完整安装包到 [Releases](https://github.com/wstimin/faka/releases/latest)，无需手动打标签。版本自动编号为 `v1.5.3-faka.N`；也可在 Actions 手动运行发布工作流。Linux x86_64 服务器下载名称含 `Linux_x86_64` 的 ZIP 或 TAR.GZ；`Source code` 是源码，不含可执行程序。
+向 `main` 推送后，GitHub Actions 会先测试，再自动构建并发布完整安装包到 [Releases](https://github.com/wstimin/faka/releases/latest)，无需手动打标签。发布版本读取 `internal/version/version.go` 中的 `Version`，使用 `v1.5.3-faka.N` 命名，每次更新先递增版本再推送；也可在 Actions 手动运行发布工作流。Linux x86_64 服务器下载名称含 `Linux_x86_64` 的 ZIP 或 TAR.GZ；`Source code` 是源码，不含可执行程序。
 
 完整 Linux 安装包包含商城前台、管理后台、V免签 Fox 驱动和首次安装页面。服务器无需安装 Go、Node、PHP，也不需要手动创建 MariaDB 数据库。自动发货需要可连接的 Redis。
 
@@ -23,6 +23,8 @@ application: the Go backend, the customer storefront, and the admin panel.
 `v1.5.3-faka.6` 新增鎏金模板。后台「系统设置 → 模板配置」可选择经典、数字保险库或「鎏金模板」，保存后刷新前台生效。鎏金使用暖米白、复古金和深棕灰配色，复用现有购买流程；游客查询和会员订单采用紧凑表格，点击「查看卡密」在当前页面弹出原始发货内容，可复制或下载。超过接口预览上限的内容只允许下载完整版，避免复制不完整内容。首页、商品中心和分类页跟随后台切换卡片或列表布局。
 
 ## 网页版本更新
+
+`v1.5.3-faka.8` 支持在后台「系统设置 → 基础设置 → 后台入口」修改后台路径，此项单独保存。确认框会显示新的完整登录地址；支持托管重启的正式安装包保存后自动重启，确认新入口可访问后跳转。其他部署保存后需手动重启。重启前旧入口仍有效，重启生效后旧入口不再提供后台页面，也不会跳转到新入口。请先记下新地址；如果反向代理按旧路径配置，需要同步调整。路径保存在程序实际读取的配置文件中，不写入公开站点配置；`WEB_ADMIN_PATH` 环境变量覆盖时禁止在页面修改。
 
 GitHub Release 正式安装包已启用后台更新。登录后台后点击顶部「检测更新」，更新源固定为 `wstimin/faka`，面板会显示来源、当前版本和最新版本。点击「一键升级」并确认后，页面显示下载、SHA-256 校验、解压和替换进度；通过 `start.sh` 托管的服务会自动重启，确认目标版本启动后自动刷新网页。下载失败或校验失败不会继续替换。未由可重启服务托管的程序只下载替换，需要手动重启，页面会明确提示。
 

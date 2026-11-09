@@ -23,8 +23,11 @@ import SettingsOrderEmailTemplateTab from './components/SettingsOrderEmailTempla
 import SettingsNavigationTab from './components/SettingsNavigationTab.vue'
 import SettingsHomeAnnouncementTab from './components/SettingsHomeAnnouncementTab.vue'
 import SettingsUpstreamSyncTab from './components/SettingsUpstreamSyncTab.vue'
+import SettingsAdminPath from './components/SettingsAdminPath.vue'
+import { useAdminAuthStore } from '@/stores/auth'
 
 const { t } = useI18n()
+const authStore = useAdminAuthStore()
 const loading = ref(false)
 const smtpTabRef = ref<InstanceType<typeof SettingsSMTPTab>>()
 const captchaTabRef = ref<InstanceType<typeof SettingsCaptchaTab>>()
@@ -846,6 +849,7 @@ onMounted(() => {
       </TabsList>
 
       <TabsContent value="basic" :forceMount="true" v-show="currentTab === 'basic'" class="space-y-6 mt-0">
+      <SettingsAdminPath v-if="authStore.hasPermission('GET:/admin/system/admin-path')" />
       <div class="rounded-xl border border-border bg-card">
         <div class="border-b border-border bg-muted/40 px-6 py-4">
           <h2 class="text-lg font-semibold">{{ t('admin.settings.registration.title') }}</h2>
